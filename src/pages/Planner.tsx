@@ -3,8 +3,70 @@ import { motion } from "framer-motion";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, Globe } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
+interface TripDetails {
+  destination: string;
+  startDate: string;
+  endDate: string;
+  tripType: string;
+}
 
 const Planner = () => {
+  const [tripDetails, setTripDetails] = useState<TripDetails>({
+    destination: "",
+    startDate: "",
+    endDate: "",
+    tripType: "",
+  });
+
+  const validateDates = (start: string, end: string): boolean => {
+    if (!start || !end) return false;
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    return startDate <= endDate;
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setTripDetails((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleGenerateItinerary = () => {
+    // Validate inputs
+    if (!tripDetails.destination) {
+      toast.error("Please enter a destination");
+      return;
+    }
+
+    if (!tripDetails.startDate || !tripDetails.endDate) {
+      toast.error("Please select both start and end dates");
+      return;
+    }
+
+    if (!validateDates(tripDetails.startDate, tripDetails.endDate)) {
+      toast.error("End date must be after start date");
+      return;
+    }
+
+    if (!tripDetails.tripType) {
+      toast.error("Please select a trip type");
+      return;
+    }
+
+    // If all validations pass, show success and proceed
+    toast.success("Generating your personalized itinerary...");
+    
+    // Here you would typically make an API call to generate the itinerary
+    console.log("Generating itinerary for:", tripDetails);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-travel-50 to-travel-100">
       <Navigation />
@@ -25,6 +87,9 @@ const Planner = () => {
                 </div>
                 <input
                   type="text"
+                  name="destination"
+                  value={tripDetails.destination}
+                  onChange={handleInputChange}
                   placeholder="Enter destination"
                   className="w-full px-4 py-2 rounded-lg border border-travel-200 focus:outline-none focus:ring-2 focus:ring-travel-accent"
                 />
@@ -38,10 +103,18 @@ const Planner = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <input
                     type="date"
+                    name="startDate"
+                    value={tripDetails.startDate}
+                    onChange={handleInputChange}
+                    min={new Date().toISOString().split('T')[0]}
                     className="px-4 py-2 rounded-lg border border-travel-200 focus:outline-none focus:ring-2 focus:ring-travel-accent"
                   />
                   <input
                     type="date"
+                    name="endDate"
+                    value={tripDetails.endDate}
+                    onChange={handleInputChange}
+                    min={tripDetails.startDate || new Date().toISOString().split('T')[0]}
                     className="px-4 py-2 rounded-lg border border-travel-200 focus:outline-none focus:ring-2 focus:ring-travel-accent"
                   />
                 </div>
@@ -52,7 +125,12 @@ const Planner = () => {
                   <Globe className="w-5 h-5 mr-2" />
                   <h2 className="text-xl font-semibold">Trip Type</h2>
                 </div>
-                <select className="w-full px-4 py-2 rounded-lg border border-travel-200 focus:outline-none focus:ring-2 focus:ring-travel-accent">
+                <select
+                  name="tripType"
+                  value={tripDetails.tripType}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 rounded-lg border border-travel-200 focus:outline-none focus:ring-2 focus:ring-travel-accent"
+                >
                   <option value="">Select trip type</option>
                   <option value="adventure">Adventure</option>
                   <option value="relaxation">Relaxation</option>
@@ -63,6 +141,7 @@ const Planner = () => {
             </div>
 
             <Button 
+              onClick={handleGenerateItinerary}
               className="mt-8 bg-travel-accent text-white hover:bg-travel-accent/90"
             >
               Generate Itinerary
