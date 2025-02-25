@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, Globe } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface TripDetails {
   destination: string;
@@ -14,6 +15,7 @@ interface TripDetails {
 }
 
 const Planner = () => {
+  const navigate = useNavigate();
   const [tripDetails, setTripDetails] = useState<TripDetails>({
     destination: "",
     startDate: "",
@@ -60,11 +62,11 @@ const Planner = () => {
       return;
     }
 
-    // If all validations pass, show success and proceed
+    // If all validations pass, show success and navigate
     toast.success("Generating your personalized itinerary...");
     
-    // Here you would typically make an API call to generate the itinerary
-    console.log("Generating itinerary for:", tripDetails);
+    // Navigate to the itinerary page with the trip details
+    navigate("/itinerary", { state: { tripDetails } });
   };
 
   return (

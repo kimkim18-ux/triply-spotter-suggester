@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
 import Planner from "./pages/Planner";
+import GeneratedItinerary from "./pages/GeneratedItinerary";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/planner" element={<Planner />} />
+            <Route path="/itinerary" element={<GeneratedItinerary />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>
